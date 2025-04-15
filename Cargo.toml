@@ -1,0 +1,35 @@
+[package]
+name = "ringvrf"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+curve25519-dalek = { git = "https://github.com/deepsafe/curve25519-dalek.git", branch = "deepsafe", default-features = false, features = ["serde", "alloc", "u64_backend"]}
+polynomials = { git = "https://github.com/deepsafe/polynomials.git", branch = "deepsafe", default-features = false, features = ["alloc"] }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+sha2 = { version = "0.8", default-features = false }
+sha3 = { version = "0.8", default-features = false }
+p256 = { version = "0.8", default-features = false, features = ["ecdsa"], optional = true }
+k256 = { version = "0.8", default-features = false, features = ["ecdsa"], optional = true }
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+rand = { version = "0.8", default-features = false, features = ["getrandom"], optional = true }
+rand_core = { version = "0.5.1", default-features = false, features = ["getrandom"], optional = true }
+
+rand_sgx = { package = "rand_core", git = "https://github.com/mesalock-linux/rand-sgx", default-features = false , optional = true }
+
+[features]
+default = ["std", "pk256", "std-prove"]
+std = ["curve25519-dalek/std", "sha3/std", "serde_json/std", "serde/std", "sha2/std", "polynomials/std", "prove"]
+
+std-prove = ["prove","std-rand"] # prove std-rand
+sgx-prove = ["prove","sgx-rand"]
+
+prove = []
+std-rand = ["rand", "rand_core"]
+
+pk256 = ["p256", "k256"]  # + p256 +k256
+
+sgx-rand = ["rand_sgx"]
